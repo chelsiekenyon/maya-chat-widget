@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maya - Million Dollar Gap Breakthrough Session</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Libre+Franklin:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Libre Franklin', sans-serif;
+            background: linear-gradient(135deg, #0F7084 0%, #0B87A2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #0F7084 0%, #0B87A2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .chat-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .chat-header p {
+            font-family: 'Libre Franklin', sans-serif;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        
+        .message.maya {
+            background: #e0f7fa;
+            padding: 15px;
+            border-radius: 18px 18px 18px 5px;
+            border-left: 4px solid #0F7084;
+        }
+        
+        .message.user {
+            background: #f0f8f8;
+            padding: 15px;
+            border-radius: 18px 18px 5px 18px;
+            margin-left: auto;
+            border-right: 4px solid #0B87A2;
+        }
+        
+        .message strong {
+            color: #333;
+        }
+        
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        
+        .chat-footer {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .chat-footer a {
+            color: #0F7084;
+            text-decoration: none;
+        }
+        
+        .chat-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #0F7084;
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #0F7084 0%, #0B87A2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .revenue-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .revenue-btn {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .revenue-btn:hover {
+            background: #e0f7fa;
+            border-color: #0F7084;
+        }
+        
+        .purchase-btn {
+            background: linear-gradient(135deg, #0F7084 0%, #0B87A2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .purchase-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 15px;
+            background: #e0f7fa;
+            border-radius: 18px 18px 18px 5px;
+            border-left: 4px solid #0F7084;
+            max-width: 80px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #0F7084;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
+        .session-ended {
+            text-align: center;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 10px;
+            border: 2px solid #0F7084;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>The Million Dollar Gap - Breakthrough Session</h1>
+            <p>Say "hello" to start your session with Maya, your Million Dollar Gap Advisor</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will appear here -->
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+        
+        <div class="input-container">
+            <div class="input-group">
+                <input type="text" id="userInput" placeholder="Type your message..." maxlength="500">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+            <div id="revenueOptions" class="revenue-options" style="display: none;">
+                <!-- Revenue buttons will appear here -->
+            </div>
+        </div>
+        
+        <div class="chat-footer">
+            © 2025 <a href="https://www.chelsiekenyon.com" target="_blank">Chelsie Kenyon</a> | Million Dollar Gap Breakthrough Session
+        </div>
+    </div>
+
+    <script>
+        // Replace with your actual API key and endpoint
+        const API_KEY = 'your-openai-api-key-here';
+        const API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+        
+        // Conversation state
+        let conversationState = {
+            stage: 'greeting',
+            userData: {},
+            messages: [],
+            hasUsedSession: false
+        };
+        
+        // Maya's comprehensive prompt
+        const MAYA_PROMPT = `You are Maya, the Million Dollar Gap Advisor. You represent Chelsie Kenyon's Business Alchemy methodology. Your purpose is to help established women entrepreneurs ($5k-$20k/month) realize they're focused on the wrong solutions - trying to get better at tactics instead of building strategic business architecture with an ecosystem.
+
+VOICE & TONE:
+Use these phrases: "I totally get it", "Here's the thing...", "What if instead of...", "So you can...", "desire" instead of "want", "Encapsulate your magic", "Heavy-lifting", "Wake up to new sales from work you did last year", "Business architecture", "Ecosystem", "Reimagine"
+
+Always validate first, never make anyone wrong. Focus on outcomes and freedom, not problems. Position ecosystem/business architecture as the strategic solution.
+
+CONVERSATION FLOW:
+1. Greeting: "Hey! I'm Maya, and I help established women entrepreneurs identify the million dollar gap in their business strategy. Before we dive in, I'd love to learn a bit about you and your business so I can give you the most relevant insights. Let me ask you a few quick questions: **What's your name?**"
+
+2. Collect: Name, who they help, time in business, revenue range
+3. Main question: "What's the main thing you've been trying to get better at to grow your business?"
+4. Follow-up: "What have you tried so far to improve this?"
+5. Personalized reframe using their name and "Many entrepreneurs in your industry focus on..."
+6. Offer transition
+
+REFRAME EXAMPLES:
+For "content creation": "I totally get it, [Name]. Many entrepreneurs in your industry focus on creating high-converting content, which is a great start. But trying to make every post convert creates constant pressure and inconsistent results. What if instead of searching for that mythical 'perfect converting post,' you built an entire ecosystem where your content works together to convert consistently - without the pressure of every single post needing to perform?"
+
+AFTER REFRAME:
+"Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.
+
+**I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture.** Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.
+
+Chelsie actually created something specifically for women entrepreneurs like you, desiring [reference their desire]. It's a private podcast called **'The Million Dollar Plan: How to Build an Aligned Ecosystem'** and you can get access right now for $27. 
+
+In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so they can wake up to new sales from work you did last year.
+
+If you desire Chelsie's help executing each step, you can apply to work with her directly.
+
+Ready to close the gap?"
+
+Respond as Maya with this personality and flow.`;
+
+        // Check if user has already used the session
+        function checkSessionUsage() {
+            const hasUsed = localStorage.getItem('maya_session_used');
+            if (hasUsed) {
+                showSessionEndedMessage();
+                return true;
+            }
+            return false;
+        }
+        
+        // Mark session as used
+        function markSessionUsed() {
+            localStorage.setItem('maya_session_used', 'true');
+        }
+        
+        // Initialize chat
+        function initializeChat() {
+            if (checkSessionUsage()) {
+                return;
+            }
+            
+            // Start with Maya's greeting
+            setTimeout(() => {
+                addMayaMessage("Hey! I'm Maya, and I help established women entrepreneurs identify the million dollar gap in their business strategy.<br><br>Before we dive in, I'd love to learn a bit about you and your business so I can give you the most relevant insights. Let me ask you a few quick questions:<br><br><strong>What's your name?</strong>");
+                conversationState.stage = 'name';
+            }, 1000);
+        }
+        
+        // Add message to chat
+        function addMessage(content, isUser = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'maya'}`;
+            messageDiv.innerHTML = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function addMayaMessage(content) {
+            addMessage(content, false);
+        }
+        
+        function addUserMessage(content) {
+            addMessage(content, true);
+        }
+        
+        // Show typing indicator
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+        
+        // Hide typing indicator
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+        
+        // Handle revenue selection
+        function selectRevenue(range) {
+            conversationState.userData.revenue = range;
+            addUserMessage(range);
+            hideRevenueOptions();
+            
+            setTimeout(() => {
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    let response = getRevenueResponse(range);
+                    addMayaMessage(response);
+                    conversationState.stage = 'main_question';
+                }, 1500);
+            }, 500);
+        }
+        
+        function getRevenueResponse(range) {
+            let response = "";
+            if (range.includes("20k+")) {
+                response = `Amazing, ${conversationState.userData.name}! You're clearly doing something right - ${conversationState.userData.timeInBusiness} in business and over $20k/month shows you know how to create real transformation for your clients.<br><br>`;
+            } else if (range.includes("10k-20k")) {
+                response = `Fantastic, ${conversationState.userData.name}! ${conversationState.userData.timeInBusiness} in business and hitting $10k-20k months shows you've built something solid.<br><br>`;
+            } else if (range.includes("5k-10k")) {
+                response = `Great work, ${conversationState.userData.name}! You're in that sweet spot where you've proven your concept works.<br><br>`;
+            } else {
+                response = `Thanks for sharing, ${conversationState.userData.name}! You're building something meaningful.<br><br>`;
+            }
+            
+            response += `Now here's the question that usually reveals everything: <strong>What's the main thing you've been trying to get better at to grow your business?</strong>`;
+            return response;
+        }
+        
+        // Show revenue options
+        function showRevenueOptions() {
+            const revenueDiv = document.getElementById('revenueOptions');
+            revenueDiv.style.display = 'grid';
+            revenueDiv.innerHTML = `
+                <button class="revenue-btn" onclick="selectRevenue('Under $5k/month')">Under $5k/month</button>
+                <button class="revenue-btn" onclick="selectRevenue('$5k-$10k/month')">$5k-$10k/month</button>
+                <button class="revenue-btn" onclick="selectRevenue('$10k-$20k/month')">$10k-$20k/month</button>
+                <button class="revenue-btn" onclick="selectRevenue('Over $20k/month')">Over $20k/month</button>
+            `;
+            document.getElementById('userInput').style.display = 'none';
+            document.getElementById('sendBtn').style.display = 'none';
+        }
+        
+        // Hide revenue options
+        function hideRevenueOptions() {
+            document.getElementById('revenueOptions').style.display = 'none';
+            document.getElementById('userInput').style.display = 'block';
+            document.getElementById('sendBtn').style.display = 'block';
+        }
+        
+        // Process user input based on conversation stage
+        async function processUserInput(input) {
+            conversationState.messages.push({role: 'user', content: input});
+            
+            switch(conversationState.stage) {
+                case 'name':
+                    conversationState.userData.name = input;
+                    conversationState.stage = 'niche';
+                    return `Nice to meet you, ${input}!<br><br><strong>Who do you help? (What's your niche or industry?)</strong>`;
+                    
+                case 'niche':
+                    conversationState.userData.niche = input;
+                    conversationState.stage = 'time_in_business';
+                    return `That's beautiful work, ${conversationState.userData.name}! ${input} is such important work.<br><br><strong>How long have you been in business?</strong>`;
+                    
+                case 'time_in_business':
+                    conversationState.userData.timeInBusiness = input;
+                    conversationState.stage = 'revenue';
+                    setTimeout(() => {
+                        showRevenueOptions();
+                    }, 500);
+                    return `Wow, ${input} - that's incredible staying power! You've clearly built something meaningful.<br><br><strong>What's your current monthly revenue range?</strong>`;
+                    
+                case 'main_question':
+                    conversationState.userData.mainChallenge = input;
+                    conversationState.stage = 'follow_up';
+                    return `Got it. What have you tried so far to improve this?`;
+                    
+                case 'follow_up':
+                    conversationState.userData.attempted = input;
+                    conversationState.stage = 'complete';
+                    markSessionUsed(); // Mark session as used after getting all info
+                    return await generatePersonalizedReframe();
+                    
+                default:
+        // Handle user input
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Disable input while processing
+            input.disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            
+            // Add user message
+            addUserMessage(message);
+            input.value = '';
+            
+            // Show typing indicator
+            showTyping();
+            
+            try {
+                // Process the message
+                const response = await processUserInput(message);
+                
+                // Hide typing and show response
+                setTimeout(() => {
+                    hideTyping();
+                    addMayaMessage(response);
+                    
+                    // Re-enable input
+                    input.disabled = false;
+                    document.getElementById('sendBtn').disabled = false;
+                    input.focus();
+                }, 1500);
+                
+            } catch (error) {
+                hideTyping();
+                addMayaMessage("I'm having a technical moment! Please try again.");
+                input.disabled = false;
+                document.getElementById('sendBtn').disabled = false;
+            }
+        }
+        
+        // Handle Enter key
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Generate personalized reframe using OpenAI
+        async function generatePersonalizedReframe() {
+            const userData = conversationState.userData;
+            
+            const prompt = `You are Maya, representing Chelsie Kenyon's Business Alchemy methodology. Generate a personalized reframe for this woman entrepreneur:
+
+Name: ${userData.name}
+Industry: ${userData.niche}
+Time in business: ${userData.timeInBusiness}
+Revenue: ${userData.revenue}
+Main challenge: ${userData.mainChallenge}
+What they've tried: ${userData.attempted}
+
+Use this format:
+"I totally get it, ${userData.name}. Many entrepreneurs in your industry focus on [their challenge], and [positive acknowledgment]. But [limitation of their approach]. What if instead of [their approach], you built [ecosystem solution] - so [outcome/freedom]?"
+
+Then add the standard offer transition about the Million Dollar Gap and The Million Dollar Plan podcast.
+
+Keep Chelsie's voice: confident, direct, uses "desire" not "want", focuses on business architecture/ecosystem solutions.`;
+
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4',
+                        messages: [
+                            { role: 'system', content: MAYA_PROMPT },
+                            { role: 'user', content: prompt }
+                        ],
+                        max_tokens: 500,
+                        temperature: 0.7
+                    })
+                });
+
+                const data = await response.json();
+                let reframe = data.choices[0].message.content;
+                
+                // Add purchase button
+                reframe += '<br><br><button class="purchase-btn" onclick="window.open(\'https://your-kajabi-checkout-url.com\', \'_blank\')">Get The Million Dollar Plan - $27</button>';
+                
+                return reframe;
+                
+            } catch (error) {
+                console.error('API Error:', error);
+                return generateFallbackReframe();
+            }
+        }
+        
+        // Fallback reframe if API fails
+        function generateFallbackReframe() {
+            const userData = conversationState.userData;
+            
+            let reframe = `I totally get it, ${userData.name}. Many entrepreneurs in your industry focus on ${userData.mainChallenge}, and you've clearly been putting in the work with ${userData.attempted}. But constantly trying to perfect tactics keeps you stuck in reactive mode rather than building strategic business architecture.<br><br>`;
+            
+            reframe += `What if instead of trying to get better at ${userData.mainChallenge}, you built an ecosystem that encapsulates your magic and delivers it to the right person at the right time - so you can wake up to new sales from work you did last year?<br><br>`;
+            
+            reframe += `Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.<br><br>`;
+            
+            reframe += `<strong>I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture.</strong> Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.<br><br>`;
+            
+            reframe += `Chelsie actually created something specifically for women entrepreneurs like you, desiring to grow beyond the constant tactical improvements. It's a private podcast called <strong>'The Million Dollar Plan: How to Build an Aligned Ecosystem'</strong> and you can get access right now for $27.<br><br>`;
+            
+            reframe += `In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so they can wake up to new sales from work you did last year.<br><br>`;
+            
+            reframe += `If you desire Chelsie's help executing each step, you can apply to work with her directly.<br><br>`;
+            
+            reframe += '<button class="purchase-btn" onclick="window.open(\'https://your-kajabi-checkout-url.com\', \'_blank\')">Get The Million Dollar Plan - $27</button><br><br>';
+            
+            reframe += `Ready to close the gap?`;
+            
+            return reframe;
+        }
+        
+        // Show session ended message
+        function showSessionEndedMessage() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `
+                <div class="session-ended">
+                    <h3>Session Complete!</h3>
+                    <p>You've already experienced your Million Dollar Gap breakthrough session. Each person gets one personalized session.</p>
+                    <p>Ready to dive deeper? <a href="https://your-kajabi-checkout-url.com" target="_blank" style="color: #0F7084; font-weight: bold;">Get The Million Dollar Plan</a></p>
+                </div>
+            `;
+            
+            // Hide input
+            document.getElementById('userInput').style.display = 'none';
+            document.getElementById('sendBtn').style.display = 'none';
+            document.getElementById('revenueOptions').style.display = 'none';
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChat();
+        });
+    </script>
