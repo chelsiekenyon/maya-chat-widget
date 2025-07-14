@@ -34,21 +34,7 @@
         }
         
         .chat-header {
-            background: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .chat-header h2 {
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 20px;
-        }
-        
-        .chat-header p {
-            color: #666;
-            font-size: 14px;
+            display: none;
         }
         
         .chat-messages {
@@ -65,19 +51,19 @@
         }
         
         .message.maya {
-            background: #e0f2f1;
+            background: #b2dfdb;
             padding: 12px 16px;
             border-radius: 16px 16px 16px 6px;
             color: #333;
         }
         
         .message.user {
-            background: #f0f8f8;
+            background: #e0f2f1;
             padding: 12px 16px;
             border-radius: 16px 16px 6px 16px;
             margin-left: auto;
             color: #333;
-            border: 1px solid #b2dfdb;
+            border: 1px solid #80cbc4;
         }
         
         .typing-indicator {
@@ -85,7 +71,7 @@
             align-items: center;
             gap: 8px;
             padding: 12px 16px;
-            background: #e0f2f1;
+            background: #b2dfdb;
             border-radius: 16px;
             max-width: 100px;
             margin-bottom: 15px;
@@ -260,7 +246,8 @@
             stage: 'greeting',
             userData: {},
             conversationHistory: [],
-            sessionComplete: false
+            sessionComplete: false,
+            waitingForNextResponse: false
         };
 
         // Your complete Maya prompt
@@ -576,7 +563,7 @@ Ready to close the gap?"
             console.log('=== END CHAT DATA ===');
             
             // Also send to your backend for logging
-            fetch('/api/log-chat', {
+            fetch('https://maya-chat-widget.vercel.app/api/log-chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -591,25 +578,39 @@ Ready to close the gap?"
             switch(conversationState.stage) {
                 case 'greeting':
                     conversationState.stage = 'name';
-                    return `Hey! I'm Maya, and I help established entrepreneurs identify the million dollar gap in their business strategy.<br><br>Before we dive in, I'd love to learn a bit about you and your business so I can give you the most relevant insights. Let me ask you a few quick questions:<br><br><strong>What's your name?</strong>`;
+                    return `<strong>What's your name?</strong>`;
                     
                 case 'name':
                     conversationState.userData.name = input;
                     conversationState.stage = 'niche';
-                    return `Nice to meet you, ${input}!<br><br><strong>Who do you help? (What's your niche or industry?)</strong>`;
+                    return `Great to meet you, ${input}!<br><br><strong>Who do you help? (What's your niche or industry?)</strong>`;
                     
                 case 'niche':
                     conversationState.userData.niche = input;
                     conversationState.stage = 'time_in_business';
-                    return `That's such important work, ${conversationState.userData.name}!<br><br><strong>How long have you been in business?</strong>`;
+                    return `That's such important work, ${conversationState.userData.name}! ${input} - wow, that's really meaningful.<br><br><strong>How long have you been in business?</strong>`;
                     
                 case 'time_in_business':
                     conversationState.userData.timeInBusiness = input;
                     conversationState.stage = 'revenue';
+                    let timeResponse = '';
+                    if (input.includes('year')) {
+                        if (input.includes('1') || input.includes('one')) {
+                            timeResponse = `A year in business - you're building something real!`;
+                        } else if (input.includes('2') || input.includes('two')) {
+                            timeResponse = `Two years - you've gotten through the hardest part!`;
+                        } else if (input.includes('3') || input.includes('three')) {
+                            timeResponse = `Three years - that's some serious staying power!`;
+                        } else {
+                            timeResponse = `${input} - that shows real commitment and persistence!`;
+                        }
+                    } else {
+                        timeResponse = `${input} - that's incredible dedication!`;
+                    }
                     setTimeout(() => {
                         showRevenueOptions();
                     }, 500);
-                    return `<strong>What's your current monthly revenue range?</strong>`;
+                    return `${timeResponse}<br><br><strong>What's your current monthly revenue range?</strong>`;
                     
                 case 'main_question':
                     conversationState.userData.mainChallenge = input;
@@ -618,10 +619,19 @@ Ready to close the gap?"
                     
                 case 'follow_up':
                     conversationState.userData.whatTriedSoFar = input;
-                    conversationState.stage = 'complete';
-                    conversationState.sessionComplete = true;
+                    conversationState.stage = 'waiting_for_next';
+                    conversationState.waitingForNextResponse = true;
                     logUserData();
                     return await generatePersonalizedReframe();
+                    
+                case 'waiting_for_next':
+                    if (input.toLowerCase().includes('yes') || input.toLowerCase().includes('sure') || input.toLowerCase().includes('tell me') || input.toLowerCase().includes('what')) {
+                        conversationState.stage = 'complete';
+                        conversationState.sessionComplete = true;
+                        return generateOfferResponse();
+                    } else {
+                        return `No worries! If you change your mind and want to hear about the solution, just let me know.`;
+                    }
                     
                 default:
                     if (conversationState.sessionComplete) {
@@ -680,7 +690,7 @@ Ready to close the gap?"
         async function generatePersonalizedReframe() {
             const userData = conversationState.userData;
             
-            const contextMessage = `Please provide a personalized reframe for this user:
+            const contextMessage = `Please provide a personalized reframe for this user, but STOP after revealing the Million Dollar Gap. Do not include the offer yet:
 
 Name: ${userData.name}
 Industry/Niche: ${userData.niche}  
@@ -689,7 +699,7 @@ Revenue: ${userData.revenue}
 Main challenge they want to get better at: ${userData.mainChallenge}
 What they've tried so far: ${userData.whatTriedSoFar}
 
-Use the reframe categories and formula provided in your instructions. End with the Million Dollar Plan offer and include the purchase button.`;
+Use the reframe categories and formula provided in your instructions. Include proper paragraph breaks for readability. Add some bold text for emphasis. End by asking "Would you like to hear what's next?"`;
 
             try {
                 const response = await fetch(API_ENDPOINT, {
@@ -709,12 +719,7 @@ Use the reframe categories and formula provided in your instructions. End with t
                     throw new Error(data.error || 'API call failed');
                 }
                 
-                let reframe = data.message;
-                
-                // Add the purchase button
-                reframe += '<br><br><button class="purchase-btn" onclick="window.open(\'https://www.chelsiekenyon.com/milliondollarplan\', \'_blank\')">Get The Million Dollar Plan - $27</button>';
-                
-                return reframe;
+                return data.message;
                 
             } catch (error) {
                 console.error('API Error:', error);
@@ -722,12 +727,55 @@ Use the reframe categories and formula provided in your instructions. End with t
             }
         }
         
+        function generateOfferResponse() {
+            const userData = conversationState.userData;
+            
+            let response = `<strong>Great!</strong> Chelsie actually created something specifically for women entrepreneurs like you, desiring to grow beyond tactical improvements.<br><br>`;
+            
+            response += `It's a private podcast called <strong>'The Million Dollar Plan: How to Build an Aligned Ecosystem'</strong> and you can get access right now for $27.<br><br>`;
+            
+            response += `In the <strong>3 quick and easy-to-listen-to episodes</strong>, Chelsie walks you through the exact process she takes her private clients through to encapsulate your magic and deliver it to the right person at the right time, so you can <strong>wake up to new sales from work you did last year</strong>.<br><br>`;
+            
+            response += `If you desire Chelsie's help executing each step, you can apply to work with her directly.<br><br>`;
+            
+            response += '<button class="purchase-btn" onclick="window.open(\'https://www.chelsiekenyon.com/milliondollarplan\', \'_blank\')">Get The Million Dollar Plan - $27</button><br><br>';
+            
+            response += `<strong>Ready to close the gap?</strong>`;
+            
+            return response;
+        }
+        
         function generateFallbackReframe() {
             const userData = conversationState.userData;
             
-            let reframe = `I totally get it, ${userData.name}. Many entrepreneurs in your industry focus on ${userData.mainChallenge.toLowerCase()}, and you've clearly been putting in the work. But constantly trying to perfect tactics keeps you stuck in reactive mode rather than building strategic business architecture.<br><br>`;
+            // Interpret their challenge more naturally
+            let challenge = userData.mainChallenge.toLowerCase();
+            if (challenge.includes('visibility') || challenge.includes('engagement') || challenge.includes('instagram')) {
+                challenge = 'growing their social media presence';
+            } else if (challenge.includes('launch')) {
+                challenge = 'launching';
+            } else if (challenge.includes('content')) {
+                challenge = 'content creation';
+            } else if (challenge.includes('sales') || challenge.includes('sell')) {
+                challenge = 'selling';
+            } else {
+                challenge = 'tactical improvements';
+            }
             
-            reframe += `What if instead of trying to get better at ${userData.mainChallenge.toLowerCase()}, you built an ecosystem that encapsulates your magic and delivers it to the right person at the right time - so you can wake up to new sales from work you did last year?<br><br>`;
+            let reframe = `I totally get it, ${userData.name}. Many entrepreneurs in your industry focus on ${challenge}, and you've clearly been putting in the work with everything you've tried.<br><br>`;
+            
+            reframe += `But constantly trying to perfect tactics keeps you stuck in reactive mode rather than building strategic business architecture.<br><br>`;
+            
+            reframe += `What if instead of trying to get better at ${challenge}, you built an ecosystem that encapsulates your magic and delivers it to the right person at the right time - so you can <strong>wake up to new sales from work you did last year</strong>?<br><br>`;
+            
+            reframe += `<strong>Here's the thing</strong> - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.<br><br>`;
+            
+            reframe += `I just revealed what I call <strong>the Million Dollar Gap</strong> - the space between tactical improvements and strategic business architecture. Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.<br><br>`;
+            
+            reframe += `<strong>Would you like to hear what's next?</strong>`;
+            
+            return reframe;
+        }
             
             reframe += `Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.<br><br>`;
             
