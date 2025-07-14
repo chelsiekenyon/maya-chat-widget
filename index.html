@@ -457,18 +457,14 @@ NEVER use their exact words. Always interpret and make it sound natural.`;
         async function generatePersonalizedReframe() {
             const userData = conversationState.userData;
             
-            const prompt = `Create a personalized Million Dollar Gap reframe for:
+            const userDataString = `Create a personalized response for:
 
 Name: ${userData.name}
 Industry: ${userData.niche}  
 Time in business: ${userData.timeInBusiness}
 Revenue: ${userData.revenue}
 Main challenge: ${userData.mainChallenge}
-What they've tried: ${userData.attempted}
-
-Remember to interpret their challenge naturally - don't repeat their exact words. Make it flow like a real conversation.
-
-End with the Million Dollar Plan offer and purchase button.`;
+What they've tried: ${userData.attempted}`;
 
             try {
                 const response = await fetch(API_ENDPOINT, {
@@ -477,7 +473,7 @@ End with the Million Dollar Plan offer and purchase button.`;
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        messages: [{ role: 'user', content: prompt }],
+                        messages: [{ role: 'user', content: userDataString }],
                         prompt: MAYA_PROMPT
                     })
                 });
