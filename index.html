@@ -186,15 +186,16 @@
             
             .chat-messages {
                 flex: 1;
-                padding: 15px 15px 100px 15px; /* Extra bottom padding for input area */
+                padding: 15px 15px 140px 15px; /* Much larger bottom padding */
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
+                scroll-padding-bottom: 140px; /* Ensures scroll includes padding */
             }
             
             .typing-indicator {
                 margin-left: 15px;
                 margin-right: 15px;
-                margin-bottom: 20px;
+                margin-bottom: 30px; /* More space from bottom */
             }
             
             .input-container {
@@ -207,6 +208,7 @@
                 right: 0;
                 z-index: 1000;
                 box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                min-height: 80px; /* Ensure consistent height */
             }
             
             input[type="text"] {
@@ -503,6 +505,12 @@ Ready to close the gap?"
             
             switch(conversationState.stage) {
                 case 'name':
+                    // Check if they gave a valid name
+                    const lowerName = input.toLowerCase().trim();
+                    if (lowerName === 'hello' || lowerName === 'hi' || lowerName === 'hey' || lowerName === 'test' || lowerName === 'asdf' || lowerName === 'name' || lowerName === 'idk' || lowerName === 'i don\'t know' || lowerName.length < 2 || /^\d+$/.test(lowerName)) {
+                        return `I'd love to use your actual name so I can personalize our conversation! What's your first name?`;
+                    }
+                    
                     conversationState.userData.name = input;
                     conversationState.stage = 'niche';
                     return `Great to meet you, ${input}!<br><br><strong>Who do you help? (What's your niche or industry?)</strong>`;
@@ -536,6 +544,12 @@ Ready to close the gap?"
                         return `Got it! Thanks for clarifying. So you help a broader audience - that's great!<br><br><strong>How long have you been in business?</strong>`;
                     }
                     
+                    // Check if they gave a valid time answer
+                    const lowerTime = input.toLowerCase();
+                    if (!lowerTime.includes('year') && !lowerTime.includes('month') && !lowerTime.includes('1') && !lowerTime.includes('2') && !lowerTime.includes('3') && !lowerTime.includes('4') && !lowerTime.includes('5') && !lowerTime.includes('6') && !lowerTime.includes('7') && !lowerTime.includes('8') && !lowerTime.includes('9') && !lowerTime.includes('one') && !lowerTime.includes('two') && !lowerTime.includes('three') && !lowerTime.includes('four') && !lowerTime.includes('five')) {
+                        return `I'd love to know how long you've been in business to give you the most relevant insights. For example: "2 years" or "6 months" - how long have you been running your business?`;
+                    }
+                    
                     conversationState.userData.timeInBusiness = input;
                     conversationState.stage = 'revenue';
                     let timeResponse = '';
@@ -563,7 +577,7 @@ Ready to close the gap?"
                     
                     conversationState.userData.revenue = input;
                     conversationState.stage = 'main_question';
-                    return `Thanks, ${conversationState.userData.name}! Now here's the question that usually reveals everything:<br><br><strong>What's the main thing you've been trying to get better at to grow your business?</strong>`;
+                    return `Thanks, ${conversationState.userData.name}! Now here's the question that is going to reveal everything:<br><br><strong>What's the main thing you've been trying to get better at to grow your business?</strong>`;
                     
                 case 'main_question':
                     conversationState.userData.mainChallenge = input;
