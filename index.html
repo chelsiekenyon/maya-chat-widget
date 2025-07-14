@@ -204,17 +204,52 @@
             hasUsedSession: false
         };
         
-        // Simple template-filling prompt
-        const MAYA_PROMPT = `You are a helpful assistant that fills in a template with user information.
+        // Use the original comprehensive Maya prompt
+        const MAYA_PROMPT = `# Maya - Million Dollar Gap Breakthrough Session Chatbot Prompt
 
-Take the template below and replace the placeholders with appropriate interpretations of the user's information:
+## IDENTITY & ROLE
+You are Maya, the Million Dollar Gap Advisor. You represent Chelsie Kenyon's Business Alchemy methodology. Your purpose is to help established entrepreneurs ($5k-$20k/month) realize they're focused on the wrong solutions - trying to get better at tactics instead of building strategic business architecture with an ecosystem.
 
-[NAME] = use their exact name
-[INDUSTRY] = interpret their niche naturally (e.g., "life organization" for "help women organize their lives")
-[CHALLENGE] = interpret their challenge naturally (e.g., "lead generation" for "I need more leads", "content strategy" for "content creation")  
-[ATTEMPTS] = interpret what they've tried naturally (e.g., "increasing your content output" for "posting more")
+## VOICE & TONE
 
-Only replace the placeholders. Do not change any other text.`;
+### Chelsie's Specific Language Patterns
+**Use these phrases:**
+- "I totally get it"
+- "Here's the thing..."
+- "What if instead of..."
+- "So you can..." (when describing outcomes)
+- "Desire" instead of "want"
+- "Encapsulate your magic"
+- "Heavy-lifting" (what systems do for you)
+- "Wake up to new sales from work you did last year"
+- "Business architecture" not just "systems"
+- "Ecosystem" not just "funnel"
+- "Reimagine" not "fix" or "change"
+
+Create a personalized reframe based on the user's information. Use their name, industry, and specific challenge to deliver one of the reframe categories or use the reframe formula.
+
+## REFRAME FORMULA FOR ANY RESPONSE
+1. **Validate with personalization**: "I totally get it, [Name]. Many entrepreneurs in your industry focus on [their answer naturally interpreted], and [positive acknowledgment]"
+2. **Point out limitation**: "But [what's wrong with focusing on this tactical approach]"
+3. **Shift to ecosystem**: "What if instead of [their approach], you built [ecosystem solution that addresses their underlying need]"
+4. **Paint outcome**: "so [benefit/freedom they'd experience]"
+
+## AFTER THE REFRAME
+After delivering any reframe, continue with:
+
+"Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.
+
+I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture. Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.
+
+Chelsie actually created something specifically for women entrepreneurs like you, desiring [relevant desire]. It's a private podcast called **'The Million Dollar Plan: How to Build an Aligned Ecosystem'** and you can get access right now for $27.
+
+In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate your magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.
+
+If you desire Chelsie's help executing each step, you can apply to work with her directly.
+
+Ready to close the gap?"
+
+Remember: Never copy their exact words. Always interpret naturally (e.g., "I need more leads" becomes "lead generation" or "attracting ideal clients").`;
 
         // Check if user has already used the session
         function checkSessionUsage() {
@@ -358,7 +393,7 @@ Only replace the placeholders. Do not change any other text.`;
                 case 'niche':
                     conversationState.userData.niche = input;
                     conversationState.stage = 'time_in_business';
-                    return `That's beautiful work, ${conversationState.userData.name}! ${input} is such important work.<br><br><strong>How long have you been in business?</strong>`;
+                    return `That's beautiful work, ${conversationState.userData.name}! ${input} - that's such important work.<br><br><strong>How long have you been in business?</strong>`;</strong>`;
                     
                 case 'time_in_business':
                     conversationState.userData.timeInBusiness = input;
@@ -435,35 +470,16 @@ Only replace the placeholders. Do not change any other text.`;
         async function generatePersonalizedReframe() {
             const userData = conversationState.userData;
             
-            const template = `I totally get it, [NAME]. Many entrepreneurs in [INDUSTRY] focus on [CHALLENGE], and you've clearly been putting in the work with [ATTEMPTS]. But constantly trying to perfect tactics keeps you stuck in reactive mode rather than building strategic business architecture.
+            const userDataString = `Create a personalized Million Dollar Gap reframe using this user information:
 
-What if instead of trying to get better at [CHALLENGE], you built an ecosystem that encapsulates your magic and delivers it to the right person at the right time - so you can wake up to new sales from work you did last year?
-
-Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.
-
-**I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture.** Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.
-
-Chelsie actually created something specifically for women entrepreneurs like you, desiring to grow beyond the constant tactical improvements. It's a private podcast called **'The Million Dollar Plan: How to Build an Aligned Ecosystem'** and you can get access right now for $27.
-
-In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.
-
-If you desire Chelsie's help executing each step, you can apply to work with her directly.
-
-Ready to close the gap?`;
-
-            const userDataString = `Please fill in this template with the user's information:
-
-Template: ${template}
-
-User Information:
 Name: ${userData.name}
-Niche: ${userData.niche}  
+Industry/Niche: ${userData.niche}  
 Time in business: ${userData.timeInBusiness}
 Revenue: ${userData.revenue}
 Main challenge: ${userData.mainChallenge}
 What they've tried: ${userData.attempted}
 
-Replace [NAME], [INDUSTRY], [CHALLENGE], and [ATTEMPTS] with natural interpretations of the user's information.`;
+Follow the reframe formula and voice guidelines. End with the Million Dollar Plan offer.`;
 
             try {
                 const response = await fetch(API_ENDPOINT, {
