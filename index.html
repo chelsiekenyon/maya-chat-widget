@@ -405,6 +405,20 @@ Respond as Maya with this personality and flow.`;
             document.getElementById('sendBtn').style.display = 'block';
         }
         
+        // Log user responses to Vercel logs
+        function logUserResponse() {
+            const userData = conversationState.userData;
+            console.log('=== NEW CHAT COMPLETION ===');
+            console.log('Date:', new Date().toISOString());
+            console.log('Name:', userData.name || 'Not provided');
+            console.log('Niche:', userData.niche || 'Not provided');
+            console.log('Time in Business:', userData.timeInBusiness || 'Not provided');
+            console.log('Revenue:', userData.revenue || 'Not provided');
+            console.log('Main Challenge:', userData.mainChallenge || 'Not provided');
+            console.log('What They Tried:', userData.attempted || 'Not provided');
+            console.log('=== END CHAT DATA ===');
+        }
+        
         // Process user input based on conversation stage
         async function processUserInput(input) {
             conversationState.messages.push({role: 'user', content: input});
@@ -446,6 +460,10 @@ Respond as Maya with this personality and flow.`;
                     conversationState.userData.attempted = input;
                     conversationState.stage = 'complete';
                     markSessionUsed(); // Mark session as used after getting all info
+                    
+                    // Log all the user responses to Vercel logs
+                    logUserResponse();
+                    
                     return await generatePersonalizedReframe();
                     
                 default:
@@ -542,8 +560,8 @@ Keep Chelsie's voice: confident, direct, uses "desire" not "want", focuses on bu
                 
                 let reframe = data.message;
                 
-                // Add purchase button
-                reframe += '<br><br><button class="purchase-btn" onclick="window.open(\'https://your-kajabi-checkout-url.com\', \'_blank\')">Get The Million Dollar Plan - $27</button>';
+                // Add purchase button with correct Kajabi link
+                reframe += '<br><br><button class="purchase-btn" onclick="window.open(\'https://www.chelsiekenyon.com/milliondollarplan\', \'_blank\')">Get The Million Dollar Plan - $27</button>';
                 
                 return reframe;
                 
@@ -571,7 +589,7 @@ Keep Chelsie's voice: confident, direct, uses "desire" not "want", focuses on bu
             
             reframe += `If you desire Chelsie's help executing each step, you can apply to work with her directly.<br><br>`;
             
-            reframe += '<button class="purchase-btn" onclick="window.open(\'https://your-kajabi-checkout-url.com\', \'_blank\')">Get The Million Dollar Plan - $27</button><br><br>';
+            reframe += '<button class="purchase-btn" onclick="window.open(\'https://www.chelsiekenyon.com/milliondollarplan\', \'_blank\')">Get The Million Dollar Plan - $27</button><br><br>';
             
             reframe += `Ready to close the gap?`;
             
@@ -585,7 +603,7 @@ Keep Chelsie's voice: confident, direct, uses "desire" not "want", focuses on bu
                 <div class="session-ended">
                     <h3>Session Complete!</h3>
                     <p>You've already experienced your Million Dollar Gap breakthrough session. Each person gets one personalized session.</p>
-                    <p>Ready to dive deeper? <a href="https://your-kajabi-checkout-url.com" target="_blank" style="color: #0F7084; font-weight: bold;">Get The Million Dollar Plan</a></p>
+                    <p>Ready to dive deeper? <a href="https://www.chelsiekenyon.com/milliondollarplan" target="_blank" style="color: #0F7084; font-weight: bold;">Get The Million Dollar Plan</a></p>
                 </div>
             `;
             
