@@ -49,12 +49,6 @@
             margin-bottom: 5px;
         }
         
-        .chat-header p {
-            font-family: 'Libre Franklin', sans-serif;
-            opacity: 0.9;
-            font-size: 16px;
-        }
-        
         .chat-messages {
             flex: 1;
             padding: 20px;
@@ -229,7 +223,6 @@
     <div class="chat-container">
         <div class="chat-header">
             <h1>The Million Dollar Gap - Breakthrough Session</h1>
-            <p>Say "hello" to start your session with Maya, your Million Dollar Gap Advisor</p>
         </div>
         
         <div class="chat-messages" id="chatMessages">
@@ -258,9 +251,8 @@
     </div>
 
     <script>
-        // Replace with your actual API key and endpoint
-        const API_KEY = 'your-openai-api-key-here';
-        const API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+        // API endpoint - now points to your secure Vercel backend
+        const API_ENDPOINT = '/api/chat';
         
         // Conversation state
         let conversationState = {
@@ -326,11 +318,8 @@ Respond as Maya with this personality and flow.`;
                 return;
             }
             
-            // Start with Maya's greeting
-            setTimeout(() => {
-                addMayaMessage("Hey! I'm Maya, and I help established women entrepreneurs identify the million dollar gap in their business strategy.<br><br>Before we dive in, I'd love to learn a bit about you and your business so I can give you the most relevant insights. Let me ask you a few quick questions:<br><br><strong>What's your name?</strong>");
-                conversationState.stage = 'name';
-            }, 1000);
+            // Wait for user to say hello instead of auto-starting
+            addMayaMessage("👋 Hello! I'm Maya, your Million Dollar Gap Advisor. Type 'hello' to begin your breakthrough session!");
         }
         
         // Add message to chat
@@ -421,6 +410,15 @@ Respond as Maya with this personality and flow.`;
             conversationState.messages.push({role: 'user', content: input});
             
             switch(conversationState.stage) {
+                case 'greeting':
+                    // Check if user is saying hello to start
+                    if (input.toLowerCase().includes('hello') || input.toLowerCase().includes('hi')) {
+                        conversationState.stage = 'name';
+                        return `Hey! I'm Maya, and I help established women entrepreneurs identify the million dollar gap in their business strategy.<br><br>Before we dive in, I'd love to learn a bit about you and your business so I can give you the most relevant insights. Let me ask you a few quick questions:<br><br><strong>What's your name?</strong>`;
+                    } else {
+                        return `Hi there! Please type 'hello' to begin your Million Dollar Gap breakthrough session.`;
+                    }
+                    
                 case 'name':
                     conversationState.userData.name = input;
                     conversationState.stage = 'niche';
@@ -451,6 +449,10 @@ Respond as Maya with this personality and flow.`;
                     return await generatePersonalizedReframe();
                     
                 default:
+                    return `I'm not sure I understand. Could you please rephrase that?`;
+            }
+        }
+        
         // Handle user input
         async function sendMessage() {
             const input = document.getElementById('userInput');
@@ -524,22 +526,21 @@ Keep Chelsie's voice: confident, direct, uses "desire" not "want", focuses on bu
                 const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4',
-                        messages: [
-                            { role: 'system', content: MAYA_PROMPT },
-                            { role: 'user', content: prompt }
-                        ],
-                        max_tokens: 500,
-                        temperature: 0.7
+                        messages: [{ role: 'user', content: prompt }],
+                        prompt: MAYA_PROMPT
                     })
                 });
 
                 const data = await response.json();
-                let reframe = data.choices[0].message.content;
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'API call failed');
+                }
+                
+                let reframe = data.message;
                 
                 // Add purchase button
                 reframe += '<br><br><button class="purchase-btn" onclick="window.open(\'https://your-kajabi-checkout-url.com\', \'_blank\')">Get The Million Dollar Plan - $27</button>';
@@ -566,7 +567,7 @@ Keep Chelsie's voice: confident, direct, uses "desire" not "want", focuses on bu
             
             reframe += `Chelsie actually created something specifically for women entrepreneurs like you, desiring to grow beyond the constant tactical improvements. It's a private podcast called <strong>'The Million Dollar Plan: How to Build an Aligned Ecosystem'</strong> and you can get access right now for $27.<br><br>`;
             
-            reframe += `In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so they can wake up to new sales from work you did last year.<br><br>`;
+            reframe += `In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.<br><br>`;
             
             reframe += `If you desire Chelsie's help executing each step, you can apply to work with her directly.<br><br>`;
             
@@ -599,3 +600,5 @@ Keep Chelsie's voice: confident, direct, uses "desire" not "want", focuses on bu
             initializeChat();
         });
     </script>
+</body>
+</html>
