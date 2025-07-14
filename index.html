@@ -432,6 +432,18 @@ Ready to close the gap?"
             // Convert markdown-style bold to HTML
             content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
+            // Auto-break long paragraphs for better readability
+            if (!isUser && content.length > 300) {
+                // Add breaks after sentences that end with certain patterns
+                content = content.replace(/(\. )(?=[A-Z])/g, '.$1<br><br>');
+                // Add breaks before "What if instead of"
+                content = content.replace(/(What if instead of)/g, '<br><br>$1');
+                // Add breaks before "Here's the thing"
+                content = content.replace(/(Here's the thing)/g, '<br><br>$1');
+                // Add breaks before "I just revealed"
+                content = content.replace(/(I just revealed)/g, '<br><br>$1');
+            }
+            
             messageDiv.innerHTML = content;
             messagesContainer.appendChild(messageDiv);
             
