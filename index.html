@@ -204,39 +204,17 @@
             hasUsedSession: false
         };
         
-        // Maya's bulletproof prompt for natural responses
-        const MAYA_PROMPT = `You are Maya, Chelsie Kenyon's Million Dollar Gap Advisor. 
+        // Simple template-filling prompt
+        const MAYA_PROMPT = `You are a helpful assistant that fills in a template with user information.
 
-CRITICAL RULE: Never copy the user's exact words. Always interpret and rephrase naturally.
+Take the template below and replace the placeholders with appropriate interpretations of the user's information:
 
-CHALLENGE INTERPRETATION EXAMPLES:
-- "I need more leads" → "lead generation" or "attracting ideal clients"
-- "content creation" → "creating compelling content"
-- "social media" → "building your online presence"
-- "sales" → "converting prospects" or "closing deals"
-- "marketing" → "getting your message out there"
-- "time management" → "managing your schedule effectively"
-- "finding clients" → "client acquisition"
+[NAME] = use their exact name
+[INDUSTRY] = interpret their niche naturally (e.g., "life organization" for "help women organize their lives")
+[CHALLENGE] = interpret their challenge naturally (e.g., "lead generation" for "I need more leads", "content strategy" for "content creation")  
+[ATTEMPTS] = interpret what they've tried naturally (e.g., "increasing your content output" for "posting more")
 
-WHAT THEY TRIED INTERPRETATION:
-- "posting more" → "increasing your content output"
-- "trying different things" → "experimenting with various approaches"
-- "working harder" → "putting in more effort"
-
-RESPONSE TEMPLATE:
-"I totally get it, [Name]. Many entrepreneurs in [their industry] focus on [REWORDED CHALLENGE], and [acknowledge their efforts using REWORDED ATTEMPTS]. But [limitation]. What if instead of [REWORDED TACTICAL APPROACH], you built an ecosystem that [strategic solution]?
-
-Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.
-
-I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture. Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.
-
-Chelsie actually created something specifically for women entrepreneurs like you, desiring [relevant desire]. It's a private podcast called 'The Million Dollar Plan: How to Build an Aligned Ecosystem' and you can get access right now for $27.
-
-In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.
-
-Ready to close the gap?"
-
-NEVER use their exact words. Always interpret and make it sound natural.`;
+Only replace the placeholders. Do not change any other text.`;
 
         // Check if user has already used the session
         function checkSessionUsage() {
@@ -457,14 +435,35 @@ NEVER use their exact words. Always interpret and make it sound natural.`;
         async function generatePersonalizedReframe() {
             const userData = conversationState.userData;
             
-            const userDataString = `Create a personalized response for:
+            const template = `I totally get it, [NAME]. Many entrepreneurs in [INDUSTRY] focus on [CHALLENGE], and you've clearly been putting in the work with [ATTEMPTS]. But constantly trying to perfect tactics keeps you stuck in reactive mode rather than building strategic business architecture.
 
+What if instead of trying to get better at [CHALLENGE], you built an ecosystem that encapsulates your magic and delivers it to the right person at the right time - so you can wake up to new sales from work you did last year?
+
+Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.
+
+**I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture.** Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.
+
+Chelsie actually created something specifically for women entrepreneurs like you, desiring to grow beyond the constant tactical improvements. It's a private podcast called **'The Million Dollar Plan: How to Build an Aligned Ecosystem'** and you can get access right now for $27.
+
+In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.
+
+If you desire Chelsie's help executing each step, you can apply to work with her directly.
+
+Ready to close the gap?`;
+
+            const userDataString = `Please fill in this template with the user's information:
+
+Template: ${template}
+
+User Information:
 Name: ${userData.name}
-Industry: ${userData.niche}  
+Niche: ${userData.niche}  
 Time in business: ${userData.timeInBusiness}
 Revenue: ${userData.revenue}
 Main challenge: ${userData.mainChallenge}
-What they've tried: ${userData.attempted}`;
+What they've tried: ${userData.attempted}
+
+Replace [NAME], [INDUSTRY], [CHALLENGE], and [ATTEMPTS] with natural interpretations of the user's information.`;
 
             try {
                 const response = await fetch(API_ENDPOINT, {
