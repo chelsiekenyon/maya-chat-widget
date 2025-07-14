@@ -33,10 +33,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
-        .chat-header {
-            display: none;
-        }
-        
         .chat-messages {
             flex: 1;
             padding: 20px;
@@ -51,19 +47,19 @@
         }
         
         .message.maya {
-            background: #b2dfdb;
+            background: #02477f;
             padding: 12px 16px;
             border-radius: 16px 16px 16px 6px;
-            color: #333;
+            color: white;
         }
         
         .message.user {
-            background: #e0f2f1;
+            background: #2d76a1;
             padding: 12px 16px;
             border-radius: 16px 16px 6px 16px;
             margin-left: auto;
-            color: #333;
-            border: 1px solid #80cbc4;
+            color: white;
+            border: 1px solid #02477f;
         }
         
         .typing-indicator {
@@ -71,14 +67,14 @@
             align-items: center;
             gap: 8px;
             padding: 12px 16px;
-            background: #b2dfdb;
+            background: #02477f;
             border-radius: 16px;
             max-width: 100px;
             margin-bottom: 15px;
         }
         
         .typing-text {
-            color: #666;
+            color: white;
             font-style: italic;
             font-size: 14px;
         }
@@ -132,7 +128,7 @@
         }
         
         .send-btn {
-            background: #4db6ac;
+            background: #02477f;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -143,7 +139,7 @@
         }
         
         .send-btn:hover {
-            background: #26a69a;
+            background: #035a9c;
         }
         
         .send-btn:disabled {
@@ -175,7 +171,7 @@
         }
         
         .purchase-btn {
-            background: #4db6ac;
+            background: #02477f;
             color: white;
             border: none;
             padding: 14px 24px;
@@ -188,7 +184,7 @@
         }
         
         .purchase-btn:hover {
-            background: #26a69a;
+            background: #035a9c;
         }
         
         @media (max-width: 480px) {
@@ -210,11 +206,6 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">
-            <h2>Million Dollar Gap Breakthrough Session</h2>
-            <p>with Maya, your Business Alchemy Advisor</p>
-        </div>
-        
         <div class="chat-messages" id="chatMessages">
             <!-- Messages will appear here -->
         </div>
@@ -479,6 +470,7 @@ Ready to close the gap?"
 - Focus on the ecosystem methodology as THE solution`;
 
         function initializeChat() {
+            conversationState.stage = 'name'; // Start directly at name stage
             addMayaMessage("Hey! I'm Maya, and I help established entrepreneurs identify the million dollar gap in their business strategy.<br><br>Before we dive in, I'd love to learn a bit about you and your business so I can give you the most relevant insights. Let me ask you a few quick questions:<br><br><strong>What's your name?</strong>");
         }
         
@@ -576,10 +568,6 @@ Ready to close the gap?"
             conversationState.conversationHistory.push({role: 'user', content: input});
             
             switch(conversationState.stage) {
-                case 'greeting':
-                    conversationState.stage = 'name';
-                    return `<strong>What's your name?</strong>`;
-                    
                 case 'name':
                     conversationState.userData.name = input;
                     conversationState.stage = 'niche';
@@ -588,7 +576,25 @@ Ready to close the gap?"
                 case 'niche':
                     conversationState.userData.niche = input;
                     conversationState.stage = 'time_in_business';
-                    return `That's such important work, ${conversationState.userData.name}! ${input} - wow, that's really meaningful.<br><br><strong>How long have you been in business?</strong>`;
+                    
+                    // Simple personalization based on keywords
+                    let nicheResponse = '';
+                    const lowerInput = input.toLowerCase();
+                    if (lowerInput.includes('women') || lowerInput.includes('woman')) {
+                        nicheResponse = "That's such important work, helping women!";
+                    } else if (lowerInput.includes('entrepreneur') || lowerInput.includes('business')) {
+                        nicheResponse = "Love that you're supporting entrepreneurs!";
+                    } else if (lowerInput.includes('coach') || lowerInput.includes('mentor')) {
+                        nicheResponse = "Coaching work is so impactful!";
+                    } else if (lowerInput.includes('health') || lowerInput.includes('wellness') || lowerInput.includes('fitness')) {
+                        nicheResponse = "Health and wellness work is so needed!";
+                    } else if (lowerInput.includes('creative') || lowerInput.includes('artist') || lowerInput.includes('design')) {
+                        nicheResponse = "Creative work brings so much beauty to the world!";
+                    } else {
+                        nicheResponse = "That sounds like really meaningful work!";
+                    }
+                    
+                    return `${nicheResponse}<br><br><strong>How long have you been in business?</strong>`;
                     
                 case 'time_in_business':
                     conversationState.userData.timeInBusiness = input;
@@ -773,23 +779,6 @@ Use the reframe categories and formula provided in your instructions. Include pr
             reframe += `I just revealed what I call <strong>the Million Dollar Gap</strong> - the space between tactical improvements and strategic business architecture. Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.<br><br>`;
             
             reframe += `<strong>Would you like to hear what's next?</strong>`;
-            
-            return reframe;
-        }
-            
-            reframe += `Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.<br><br>`;
-            
-            reframe += `<strong>I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture.</strong> Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.<br><br>`;
-            
-            reframe += `Chelsie actually created something specifically for women entrepreneurs like you, desiring to grow beyond tactical improvements. It's a private podcast called <strong>'The Million Dollar Plan: How to Build an Aligned Ecosystem'</strong> and you can get access right now for $27.<br><br>`;
-            
-            reframe += `In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate your magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.<br><br>`;
-            
-            reframe += `If you desire Chelsie's help executing each step, you can apply to work with her directly.<br><br>`;
-            
-            reframe += '<button class="purchase-btn" onclick="window.open(\'https://www.chelsiekenyon.com/milliondollarplan\', \'_blank\')">Get The Million Dollar Plan - $27</button><br><br>';
-            
-            reframe += `Ready to close the gap?`;
             
             return reframe;
         }
