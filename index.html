@@ -47,19 +47,19 @@
         }
         
         .message.maya {
-            background: #02477f;
+            background: #1f4372;
             padding: 12px 16px;
             border-radius: 16px 16px 16px 6px;
             color: white;
         }
         
         .message.user {
-            background: #2d76a1;
+            background: #2b9ab6;
             padding: 12px 16px;
             border-radius: 16px 16px 6px 16px;
             margin-left: auto;
             color: white;
-            border: 1px solid #02477f;
+            border: 1px solid #1f4372;
         }
         
         .typing-indicator {
@@ -67,7 +67,7 @@
             align-items: center;
             gap: 8px;
             padding: 12px 16px;
-            background: #02477f;
+            background: #1f4372;
             border-radius: 16px;
             max-width: 100px;
             margin-bottom: 15px;
@@ -124,11 +124,11 @@
         }
         
         input[type="text"]:focus {
-            border-color: #4db6ac;
+            border-color: #2b9ab6;
         }
         
         .send-btn {
-            background: #02477f;
+            background: #1f4372;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -139,7 +139,7 @@
         }
         
         .send-btn:hover {
-            background: #035a9c;
+            background: #174063;
         }
         
         .send-btn:disabled {
@@ -148,30 +148,11 @@
         }
         
         .revenue-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .revenue-btn {
-            background: white;
-            border: 2px solid #e0f2f1;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .revenue-btn:hover {
-            background: #e0f2f1;
-            border-color: #4db6ac;
+            display: none;
         }
         
         .purchase-btn {
-            background: #02477f;
+            background: #1f4372;
             color: white;
             border: none;
             padding: 14px 24px;
@@ -184,18 +165,40 @@
         }
         
         .purchase-btn:hover {
-            background: #035a9c;
+            background: #174063;
         }
         
         @media (max-width: 480px) {
+            body {
+                padding: 0;
+                height: 100vh;
+                overflow: hidden;
+            }
+            
             .chat-container {
                 height: 100vh;
                 border-radius: 0;
                 margin: 0;
+                max-height: 100vh;
             }
             
-            body {
-                padding: 0;
+            .chat-messages {
+                padding-bottom: 10px;
+                /* Account for mobile keyboard */
+                max-height: calc(100vh - 120px);
+            }
+            
+            .input-container {
+                padding: 10px 15px;
+                /* Stick to bottom above keyboard */
+                position: sticky;
+                bottom: 0;
+                background: white;
+                border-top: 1px solid #e0e0e0;
+            }
+            
+            input[type="text"] {
+                font-size: 16px; /* Prevents zoom on iOS */
             }
             
             .revenue-options {
@@ -238,7 +241,8 @@
             userData: {},
             conversationHistory: [],
             sessionComplete: false,
-            waitingForNextResponse: false
+            waitingForNextResponse: false,
+            sessionUsed: false
         };
 
         // Your complete Maya prompt
@@ -469,8 +473,38 @@ Ready to close the gap?"
 - Match their energy level and communication style
 - Focus on the ecosystem methodology as THE solution`;
 
+        function checkSessionUsage() {
+            const hasUsed = localStorage.getItem('maya_session_used');
+            if (hasUsed) {
+                showSessionLimitMessage();
+                return true;
+            }
+            return false;
+        }
+        
+        function markSessionUsed() {
+            localStorage.setItem('maya_session_used', 'true');
+        }
+        
+        function showSessionLimitMessage() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `
+                <div class="message maya" style="max-width: 90%; text-align: center; margin: 20px auto;">
+                    <h3 style="margin-bottom: 15px;">Oops! Looks like you've already completed your breakthrough session! 🎉</h3>
+                    <p style="margin-bottom: 20px;">Each person gets one personalized Million Dollar Gap session. Ready to dive deeper into building your ecosystem?</p>
+                    <button class="purchase-btn" onclick="window.open('https://www.chelsiekenyon.com/milliondollarplan', '_blank')" style="margin: 0;">Get The Million Dollar Plan - $27</button>
+                </div>
+            `;
+            
+            document.getElementById('userInput').style.display = 'none';
+            document.getElementById('sendBtn').style.display = 'none';
+        }
+
         function initializeChat() {
-            conversationState.stage = 'name'; // Start directly at name stage
+            if (checkSessionUsage()) {
+                return;
+            }
+            conversationState.stage = 'name';
             addMayaMessage("Hey! I'm Maya, and I help established entrepreneurs identify the million dollar gap in their business strategy.<br><br>Before we dive in, I'd love to learn a bit about you and your business so I can give you the most relevant insights. Let me ask you a few quick questions:<br><br><strong>What's your name?</strong>");
         }
         
@@ -478,9 +512,17 @@ Ready to close the gap?"
             const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'maya'}`;
+            
+            // Convert markdown-style bold to HTML
+            content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
             messageDiv.innerHTML = content;
             messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Better mobile scrolling
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 100);
         }
         
         function addMayaMessage(content) {
@@ -613,10 +655,12 @@ Ready to close the gap?"
                     } else {
                         timeResponse = `${input} - that's incredible dedication!`;
                     }
-                    setTimeout(() => {
-                        showRevenueOptions();
-                    }, 500);
                     return `${timeResponse}<br><br><strong>What's your current monthly revenue range?</strong>`;
+                    
+                case 'revenue':
+                    conversationState.userData.revenue = input;
+                    conversationState.stage = 'main_question';
+                    return `Thanks, ${conversationState.userData.name}! Now here's the question that usually reveals everything:<br><br><strong>What's the main thing you've been trying to get better at to grow your business?</strong>`;
                     
                 case 'main_question':
                     conversationState.userData.mainChallenge = input;
@@ -634,6 +678,7 @@ Ready to close the gap?"
                     if (input.toLowerCase().includes('yes') || input.toLowerCase().includes('sure') || input.toLowerCase().includes('tell me') || input.toLowerCase().includes('what')) {
                         conversationState.stage = 'complete';
                         conversationState.sessionComplete = true;
+                        markSessionUsed(); // Mark session as used when they complete
                         return generateOfferResponse();
                     } else {
                         return `No worries! If you change your mind and want to hear about the solution, just let me know.`;
