@@ -152,7 +152,7 @@
         }
         
         .purchase-btn {
-            background: #1f4372;
+            background: #2b9ab6;
             color: white;
             border: none;
             padding: 14px 24px;
@@ -165,40 +165,54 @@
         }
         
         .purchase-btn:hover {
-            background: #174063;
+            background: #238a9f;
         }
         
         @media (max-width: 480px) {
-            body {
+            html, body {
                 padding: 0;
-                height: 100vh;
+                margin: 0;
+                height: 100%;
                 overflow: hidden;
+                position: fixed;
+                width: 100%;
             }
             
             .chat-container {
                 height: 100vh;
+                height: 100dvh; /* Dynamic viewport height for mobile */
                 border-radius: 0;
                 margin: 0;
                 max-height: 100vh;
+                max-height: 100dvh;
+                display: flex;
+                flex-direction: column;
             }
             
             .chat-messages {
+                flex: 1;
+                padding: 15px;
+                overflow-y: auto;
                 padding-bottom: 10px;
-                /* Account for mobile keyboard */
-                max-height: calc(100vh - 120px);
             }
             
             .input-container {
                 padding: 10px 15px;
-                /* Stick to bottom above keyboard */
-                position: sticky;
-                bottom: 0;
                 background: white;
                 border-top: 1px solid #e0e0e0;
+                flex-shrink: 0;
+                /* This will stick above the keyboard */
+                position: relative;
+                bottom: 0;
             }
             
             input[type="text"] {
                 font-size: 16px; /* Prevents zoom on iOS */
+                padding: 14px 16px; /* Slightly larger for mobile */
+            }
+            
+            .send-btn {
+                padding: 14px 24px; /* Slightly larger for mobile */
             }
             
             .revenue-options {
