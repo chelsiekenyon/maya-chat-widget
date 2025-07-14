@@ -193,10 +193,8 @@
     </div>
 
     <script>
-        // API endpoint - now points to your secure Vercel backend
         const API_ENDPOINT = '/api/chat';
         
-        // Conversation state
         let conversationState = {
             stage: 'greeting',
             userData: {},
@@ -204,19 +202,17 @@
             hasUsedSession: false
         };
         
-        // Use the original comprehensive Maya prompt
-        const MAYA_PROMPT = `You are Maya, the Million Dollar Gap Advisor. You represent Chelsie Kenyon's Business Alchemy methodology. Your purpose is to help established entrepreneurs realize they're focused on the wrong solutions - trying to get better at tactics instead of building strategic business architecture with an ecosystem.
+        const MAYA_PROMPT = `You are Maya, the Million Dollar Gap Advisor. You represent Chelsie Kenyon's Business Alchemy methodology.
 
-VOICE & TONE:
-Use these phrases: "I totally get it", "Here's the thing...", "What if instead of...", "So you can...", "desire" instead of "want", "Encapsulate your magic", "Heavy-lifting", "Wake up to new sales from work you did last year", "Business architecture", "Ecosystem", "Reimagine"
+VOICE: Use "I totally get it", "Here's the thing...", "What if instead of...", "desire" not "want", "Encapsulate your magic", "Wake up to new sales from work you did last year", "Business architecture", "Ecosystem"
 
 REFRAME FORMULA:
-1. Validate with personalization: "I totally get it, [Name]. Many entrepreneurs in your industry focus on [their challenge naturally interpreted], and [positive acknowledgment]"
-2. Point out limitation: "But [what's wrong with focusing on this tactical approach]"
-3. Shift to ecosystem: "What if instead of [their approach], you built [ecosystem solution]"
-4. Paint outcome: "so [benefit/freedom they'd experience]"
+1. "I totally get it, [Name]. Many entrepreneurs in your industry focus on [challenge interpreted naturally], and [positive acknowledgment]"
+2. "But [limitation of tactical approach]"  
+3. "What if instead of [their approach], you built [ecosystem solution]"
+4. "so [benefit/freedom]"
 
-AFTER THE REFRAME:
+ENDING:
 "Here's the thing - you're already successful. You know how to create results. But what got you to where you are now isn't going to get you to your next level without burning you out.
 
 I just revealed what I call the Million Dollar Gap - the space between tactical improvements and strategic business architecture. Most entrepreneurs stay stuck in tactics because they don't know how to build the architecture.
@@ -227,9 +223,8 @@ In the 3 quick episodes, Chelsie walks you through the exact process to encapsul
 
 Ready to close the gap?"
 
-Remember: Never copy their exact words. Always interpret naturally (e.g., "I need more leads" becomes "lead generation").`;
+IMPORTANT: Never copy their exact words. Interpret naturally (e.g., "I need more leads" becomes "lead generation").`;
 
-        // Check if user has already used the session
         function checkSessionUsage() {
             const hasUsed = localStorage.getItem('maya_session_used');
             if (hasUsed) {
@@ -239,21 +234,17 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             return false;
         }
         
-        // Mark session as used
         function markSessionUsed() {
             localStorage.setItem('maya_session_used', 'true');
         }
         
-        // Initialize chat
         function initializeChat() {
             if (checkSessionUsage()) {
                 return;
             }
-            
             addMayaMessage("👋 Hello! I'm Maya, your Million Dollar Gap Advisor. Type 'hello' to begin your breakthrough session!");
         }
         
-        // Add message to chat
         function addMessage(content, isUser = false) {
             const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
@@ -271,18 +262,15 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             addMessage(content, true);
         }
         
-        // Show typing indicator
         function showTyping() {
             document.getElementById('typingIndicator').style.display = 'flex';
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
         }
         
-        // Hide typing indicator
         function hideTyping() {
             document.getElementById('typingIndicator').style.display = 'none';
         }
         
-        // Handle revenue selection
         function selectRevenue(range) {
             conversationState.userData.revenue = range;
             addUserMessage(range);
@@ -315,7 +303,6 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             return response;
         }
         
-        // Show revenue options
         function showRevenueOptions() {
             const revenueDiv = document.getElementById('revenueOptions');
             revenueDiv.style.display = 'grid';
@@ -329,14 +316,12 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             document.getElementById('sendBtn').style.display = 'none';
         }
         
-        // Hide revenue options
         function hideRevenueOptions() {
             document.getElementById('revenueOptions').style.display = 'none';
             document.getElementById('userInput').style.display = 'block';
             document.getElementById('sendBtn').style.display = 'block';
         }
         
-        // Log user responses to Vercel logs
         function logUserResponse() {
             const userData = conversationState.userData;
             console.log('=== NEW CHAT COMPLETION ===');
@@ -350,7 +335,6 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             console.log('=== END CHAT DATA ===');
         }
         
-        // Process user input based on conversation stage
         async function processUserInput(input) {
             conversationState.messages.push({role: 'user', content: input});
             
@@ -371,7 +355,7 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
                 case 'niche':
                     conversationState.userData.niche = input;
                     conversationState.stage = 'time_in_business';
-                    return `That's beautiful work, ${conversationState.userData.name}! ${input} - that's such important work.<br><br><strong>How long have you been in business?</strong>`;</strong>`;
+                    return `That's beautiful work, ${conversationState.userData.name}! ${input} - that's such important work.<br><br><strong>How long have you been in business?</strong>`;
                     
                 case 'time_in_business':
                     conversationState.userData.timeInBusiness = input;
@@ -390,10 +374,7 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
                     conversationState.userData.attempted = input;
                     conversationState.stage = 'complete';
                     markSessionUsed();
-                    
-                    // Log all the user responses to Vercel logs
                     logUserResponse();
-                    
                     return await generatePersonalizedReframe();
                     
                 default:
@@ -401,7 +382,6 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             }
         }
         
-        // Handle user input
         async function sendMessage() {
             const input = document.getElementById('userInput');
             const message = input.value.trim();
@@ -436,7 +416,6 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             }
         }
         
-        // Handle Enter key
         document.getElementById('userInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -444,7 +423,6 @@ Remember: Never copy their exact words. Always interpret naturally (e.g., "I nee
             }
         });
         
-        // Generate personalized reframe using OpenAI
         async function generatePersonalizedReframe() {
             const userData = conversationState.userData;
             
@@ -488,7 +466,6 @@ Follow the reframe formula and voice guidelines. End with the Million Dollar Pla
             }
         }
         
-        // Fallback reframe if API fails
         function generateFallbackReframe() {
             const userData = conversationState.userData;
             
@@ -502,7 +479,7 @@ Follow the reframe formula and voice guidelines. End with the Million Dollar Pla
             
             reframe += `Chelsie actually created something specifically for women entrepreneurs like you, desiring to grow beyond the constant tactical improvements. It's a private podcast called <strong>'The Million Dollar Plan: How to Build an Aligned Ecosystem'</strong> and you can get access right now for $27.<br><br>`;
             
-            reframe += `In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate their magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.<br><br>`;
+            reframe += `In the 3 quick and easy-to-listen-to episodes, Chelsie walks you through the exact process she takes her private clients through to encapsulate your magic and deliver it to the right person at the right time, so you can wake up to new sales from work you did last year.<br><br>`;
             
             reframe += `If you desire Chelsie's help executing each step, you can apply to work with her directly.<br><br>`;
             
@@ -513,7 +490,6 @@ Follow the reframe formula and voice guidelines. End with the Million Dollar Pla
             return reframe;
         }
         
-        // Show session ended message
         function showSessionEndedMessage() {
             const messagesContainer = document.getElementById('chatMessages');
             messagesContainer.innerHTML = `
@@ -529,7 +505,6 @@ Follow the reframe formula and voice guidelines. End with the Million Dollar Pla
             document.getElementById('revenueOptions').style.display = 'none';
         }
         
-        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             initializeChat();
         });
