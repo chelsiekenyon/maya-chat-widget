@@ -195,7 +195,9 @@
             .typing-indicator {
                 margin-left: 15px;
                 margin-right: 15px;
-                margin-bottom: 30px; /* More space from bottom */
+                margin-bottom: 40px; /* Even more space from bottom */
+                position: relative;
+                z-index: 100; /* Ensure it's above other elements */
             }
             
             .input-container {
@@ -463,9 +465,18 @@ Ready to close the gap?"
         }
         
         function showTyping() {
-            document.getElementById('typingIndicator').style.display = 'flex';
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'flex';
+            
+            // Force scroll to show typing indicator
             setTimeout(() => {
-                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                const messagesContainer = document.getElementById('chatMessages');
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+                // On mobile, scroll a bit extra to ensure typing indicator is visible
+                if (window.innerWidth <= 480) {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight + 100;
+                }
             }, 100);
         }
         
