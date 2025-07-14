@@ -383,14 +383,6 @@ If their answer doesn't match any category above, use this structure with person
 3. **Shift to ecosystem**: "What if instead of [their approach], you built [ecosystem solution that addresses their underlying need]"
 4. **Paint outcome**: "so [benefit/freedom they'd experience]"
 
-## REFRAME FORMULA FOR UNLISTED RESPONSES
-If their answer doesn't match any category above, use this structure with personalization:
-
-1. **Validate with personalization**: "I totally get it, [Name]. Many entrepreneurs in your industry focus on [their answer], and [positive acknowledgment]"
-2. **Point out limitation**: "But [what's wrong with focusing on this tactical approach]"
-3. **Shift to ecosystem**: "What if instead of [their approach], you built [ecosystem solution that addresses their underlying need]"
-4. **Paint outcome**: "so [benefit/freedom they'd experience]"
-
 ## AFTER THE REFRAME
 After delivering any reframe, continue with:
 
@@ -483,41 +475,6 @@ Ready to close the gap?"
             document.getElementById('typingIndicator').style.display = 'none';
         }
         
-        function selectRevenue(range) {
-            conversationState.userData.revenue = range;
-            addUserMessage(range);
-            hideRevenueOptions();
-            
-            setTimeout(() => {
-                showTyping();
-                setTimeout(() => {
-                    hideTyping();
-                    let response = `Thanks, ${conversationState.userData.name}! Now here's the question that usually reveals everything:<br><br><strong>What's the main thing you've been trying to get better at to grow your business?</strong>`;
-                    addMayaMessage(response);
-                    conversationState.stage = 'main_question';
-                }, 1500);
-            }, 500);
-        }
-        
-        function showRevenueOptions() {
-            const revenueDiv = document.getElementById('revenueOptions');
-            revenueDiv.style.display = 'grid';
-            revenueDiv.innerHTML = `
-                <button class="revenue-btn" onclick="selectRevenue('Under $5k/month')">Under $5k/month</button>
-                <button class="revenue-btn" onclick="selectRevenue('$5k-$10k/month')">$5k-$10k/month</button>
-                <button class="revenue-btn" onclick="selectRevenue('$10k-$20k/month')">$10k-$20k/month</button>
-                <button class="revenue-btn" onclick="selectRevenue('Over $20k/month')">Over $20k/month</button>
-            `;
-            document.getElementById('userInput').style.display = 'none';
-            document.getElementById('sendBtn').style.display = 'none';
-        }
-        
-        function hideRevenueOptions() {
-            document.getElementById('revenueOptions').style.display = 'none';
-            document.getElementById('userInput').style.display = 'block';
-            document.getElementById('sendBtn').style.display = 'block';
-        }
-        
         function logUserData() {
             const userData = conversationState.userData;
             const logData = {
@@ -602,6 +559,12 @@ Ready to close the gap?"
                     return `${timeResponse}<br><br><strong>What's your current monthly revenue range?</strong>`;
                     
                 case 'revenue':
+                    // Check if they gave a valid revenue answer
+                    const lowerRevenue = input.toLowerCase();
+                    if (!lowerRevenue.includes('k') && !lowerRevenue.includes('thousand') && !lowerRevenue.includes('$') && !lowerRevenue.includes('0')) {
+                        return `I'd love to know your current monthly revenue range to give you the most relevant insights. For example: "$5k-$10k/month" or "Under $5k/month" - what would you say yours is?`;
+                    }
+                    
                     conversationState.userData.revenue = input;
                     conversationState.stage = 'main_question';
                     return `Thanks, ${conversationState.userData.name}! Now here's the question that usually reveals everything:<br><br><strong>What's the main thing you've been trying to get better at to grow your business?</strong>`;
