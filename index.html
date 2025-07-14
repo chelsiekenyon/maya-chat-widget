@@ -62,15 +62,17 @@
             border: 1px solid #1f4372;
         }
         
-        .typing-indicator {
-            display: none;
+        .typing-message {
+            background: #1f4372;
+            padding: 12px 16px;
+            border-radius: 16px 16px 16px 6px;
+            color: white;
+            margin-bottom: 15px;
+            max-width: 85%;
+            line-height: 1.4;
+            display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 16px;
-            background: #1f4372;
-            border-radius: 16px;
-            max-width: 100px;
-            margin-bottom: 15px;
         }
         
         .typing-text {
@@ -87,7 +89,7 @@
         .typing-dot {
             width: 6px;
             height: 6px;
-            background: #4db6ac;
+            background: white;
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
@@ -192,14 +194,6 @@
                 scroll-padding-bottom: 140px; /* Ensures scroll includes padding */
             }
             
-            .typing-indicator {
-                margin-left: 15px;
-                margin-right: 15px;
-                margin-bottom: 40px; /* Even more space from bottom */
-                position: relative;
-                z-index: 100; /* Ensure it's above other elements */
-            }
-            
             .input-container {
                 padding: 15px;
                 background: white;
@@ -228,15 +222,6 @@
     <div class="chat-container">
         <div class="chat-messages" id="chatMessages">
             <!-- Messages will appear here -->
-        </div>
-        
-        <div class="typing-indicator" id="typingIndicator">
-            <span class="typing-text">Maya is typing</span>
-            <div class="typing-dots">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
         </div>
         
         <div class="input-container">
@@ -465,23 +450,38 @@ Ready to close the gap?"
         }
         
         function showTyping() {
-            const indicator = document.getElementById('typingIndicator');
-            indicator.style.display = 'flex';
+            // Remove any existing typing message first
+            hideTyping();
             
-            // Force scroll to show typing indicator
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-message';
+            typingDiv.id = 'typingMessage';
+            typingDiv.innerHTML = `
+                <span class="typing-text">Maya is typing</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            
+            // Force immediate scroll and reflow
+            typingDiv.offsetHeight; // Force reflow
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Double-check scroll on mobile
             setTimeout(() => {
-                const messagesContainer = document.getElementById('chatMessages');
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                
-                // On mobile, scroll a bit extra to ensure typing indicator is visible
-                if (window.innerWidth <= 480) {
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight + 100;
-                }
-            }, 100);
+            }, 50);
         }
         
         function hideTyping() {
-            document.getElementById('typingIndicator').style.display = 'none';
+            const typingMessage = document.getElementById('typingMessage');
+            if (typingMessage) {
+                typingMessage.remove();
+            }
         }
         
         function logUserData() {
